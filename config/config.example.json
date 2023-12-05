@@ -1,0 +1,16 @@
+{
+    "atualizacao": "2016-11-03 18:01:21",
+    "tpAmb": 2,
+    "razaosocial": "SUA RAZAO SOCIAL LTDA",
+    "cnpj": "99999999999999",
+    "cpf": "",
+    "siglaUF": "RN",
+    "schemes": "PL_CTe_400",
+    "versao": "4.00",
+    "proxyConf": {
+        "proxyIp": "",
+        "proxyPort": "",
+        "proxyUser": "",
+        "proxyPass": ""
+    }
+}
