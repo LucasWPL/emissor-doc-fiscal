@@ -1,13 +1,12 @@
 <?php
 
-namespace LucasWPL\EmissorCte\Traits;
+namespace LucasWPL\EmissorCte\Services;
 
 use NFePHP\Common\Certificate;
 use NFePHP\CTe\MakeCTe;
 use NFePHP\CTe\Tools;
 
-
-trait CTeCertificateToolsTrait
+class CteService
 {
     private Tools $tools;
     private MakeCTe $cte;
@@ -22,5 +21,20 @@ trait CTeCertificateToolsTrait
 
         $this->tools = new Tools($this->config, $this->certificate);
         $this->tools->model('57');
+    }
+
+    public function generate()
+    {
+        // todo
+    }
+
+    public function sign(string $xml): string
+    {
+        return $this->tools->signCTe($xml);
+    }
+
+    public function send(string $xml): string
+    {
+        return $this->tools->sefazEnviaCTe($xml);
     }
 }
