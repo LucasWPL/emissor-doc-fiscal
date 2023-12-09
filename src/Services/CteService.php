@@ -8,11 +8,11 @@ use NFePHP\CTe\Tools;
 
 class CteService
 {
+    public string $config;
+
     private Tools $tools;
     private MakeCTe $cte;
     private Certificate $certificate;
-
-    private string $config;
 
     public function __construct(string $configFilePath, string $certificateFilePath, string $certificatePassword)
     {
