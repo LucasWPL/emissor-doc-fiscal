@@ -37,4 +37,9 @@ class CteService
     {
         return $this->tools->sefazEnviaCTe($xml);
     }
+
+    public function cancel(string key, string $justification, string $protocol): string
+    {
+        return $this->tools->sefazCancela($key, $justification, $protocol);
+    }
 }
