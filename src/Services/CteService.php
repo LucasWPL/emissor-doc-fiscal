@@ -3,6 +3,7 @@
 namespace LucasWPL\EmissorCte\Services;
 
 use NFePHP\Common\Certificate;
+use NFePHP\CTe\Common\Standardize;
 use NFePHP\CTe\Complements;
 use NFePHP\CTe\MakeCTe;
 use NFePHP\CTe\Tools;
