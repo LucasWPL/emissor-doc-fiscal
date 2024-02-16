@@ -57,7 +57,7 @@ class CteService
         $cStat = $std->infEvento->cStat;
         
         if ($cStat == '101' || $cStat == '135' || $cStat == '155') {
-            $xml = Complements::toAuthorize($tools->lastRequest, $response);            
+            $xml = Complements::toAuthorize($this->tools->lastRequest, $response);            
             file_put_contents($filename, $xml);
         }
     }
