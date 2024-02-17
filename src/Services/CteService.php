@@ -50,7 +50,7 @@ class CteService
         return $this->tools->sefazCCe($key, $data, $seq);
     }
 
-    public function saveResponse(string $filename): void
+    public function saveResponse(string $filename, string $response): void
     {
         $stdCl = new Standardize($response);
         
