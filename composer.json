@@ -1,9 +1,9 @@
 {
-    "name": "lucaswpl/emissor-cte",
+    "name": "lucaswpl/emissor-doc-fiscal",
     "type": "project",
     "autoload": {
         "psr-4": {
-            "LucasWPL\\EmissorCte\\": "src/"
+            "LucasWPL\\EmissorDocFiscal\\": "src/"
         }
     },
     "authors": [
@@ -13,6 +13,7 @@
         }
     ],
     "require": {
-        "nfephp-org/sped-cte": "dev-master"
+        "nfephp-org/sped-cte": "dev-master",
+        "nfephp-org/sped-mdfe": "dev-master"
     }
 }

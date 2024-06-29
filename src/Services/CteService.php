@@ -1,6 +1,6 @@
 <?php
 
-namespace LucasWPL\EmissorCte\Services;
+namespace LucasWPL\EmissorDocFiscal\Services;
 
 use NFePHP\Common\Certificate;
 use NFePHP\CTe\Common\Standardize;
@@ -13,7 +13,6 @@ class CteService
     public string $config;
 
     private Tools $tools;
-    private MakeCTe $cte;
     private Certificate $certificate;
 
     public function __construct(string $configFilePath, string $certificateFilePath, string $certificatePassword)
