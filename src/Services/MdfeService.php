@@ -25,6 +25,11 @@ class MdfeService
         return $this->tools->signMDFe($xml);
     }
 
+    public function send(string $xml): string
+    {
+        return $this->tools->sefazEnviaLote([$xml]);
+    }
+
     public function cancel(string $key, string $justification, string $protocol): string
     {
         return $this->tools->sefazCancela($key, $justification, $protocol);
