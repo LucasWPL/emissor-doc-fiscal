@@ -27,7 +27,7 @@ class MdfeService
 
     public function send(string $xml): string
     {
-        return $this->tools->sefazEnviaLote([$xml]);
+        return $this->tools->sefazEnviaLote([$xml], '', 1);
     }
 
     public function cancel(string $key, string $justification, string $protocol): string
