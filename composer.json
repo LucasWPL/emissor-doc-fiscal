@@ -14,6 +14,7 @@
     ],
     "require": {
         "nfephp-org/sped-cte": "dev-master",
-        "nfephp-org/sped-mdfe": "dev-master"
+        "nfephp-org/sped-mdfe": "dev-master",
+        "nfephp-org/sped-nfe": "dev-master"
     }
 }
