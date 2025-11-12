@@ -17,7 +17,11 @@ class CommonService
     public function __construct(string $configFilePath, string $certificateFilePath, string $certificatePassword)
     {
         $configJson = json_decode(file_get_contents($configFilePath));
-        $configJson->versao = '4.00'; // temp fix
+ 
+        // temp fix
+        $configJson->versao = '4.00';
+        $configJson->tpAmb = (int) $configJson->tpAmb;
+        $configJson->schemes = '';
 
         $this->config = json_encode($configJson);
 
