@@ -16,7 +16,11 @@ class CommonService
 
     public function __construct(string $configFilePath, string $certificateFilePath, string $certificatePassword)
     {
-        $this->config = file_get_contents($configFilePath);
+        $configJson = json_decode(file_get_contents($configFilePath));
+        $configJson->versao = '4.00'; // temp fix
+
+        $this->config = json_encode($configJson);
+
         $this->certificate = Certificate::readPfx(file_get_contents($certificateFilePath), $certificatePassword);
 
         $this->tools = new Tools($this->config, $this->certificate);
