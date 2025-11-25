@@ -5,7 +5,6 @@ namespace LucasWPL\EmissorDocFiscal\Services;
 use NFePHP\Common\Certificate;
 use NFePHP\CTe\Common\Standardize;
 use NFePHP\CTe\Complements;
-use NFePHP\CTe\MakeCTe;
 use NFePHP\CTe\Tools;
 
 class CteService
@@ -60,5 +59,126 @@ class CteService
             $xml = Complements::toAuthorize($this->tools->lastRequest, $response);            
             file_put_contents($filename, $xml);
         }
+    }
+    
+    public function fetchDfe(string $savePath = 'storage/dfe'): array
+    {
+        if (!is_dir($savePath)) {
+            mkdir($savePath, 0755, true);
+        }
+
+        $metadataPath = "{$savePath}/metadata.json";
+        $ultNSU = 0;
+        
+        if (file_exists($metadataPath)) {
+            $metadata = json_decode(file_get_contents($metadataPath), true);
+            $ultNSU = $metadata['ultNSU'] ?? 0;
+        }
+
+        $processed = [];
+        $loopCount = 0;
+        $maxLoop = 50; // Limite de segurança para evitar timeout do PHP
+
+        while ($loopCount < $maxLoop) {
+            $loopCount++;
+            
+            try {
+                $resp = $this->tools->sefazDistDFe($ultNSU);
+            } catch (\Exception $e) {
+                // Em caso de falha de comunicação, interrompe para tentar depois
+                break;
+            }
+            
+            $dom = new \DOMDocument();
+            $dom->loadXML($resp);
+            
+            $cStatNode = $dom->getElementsByTagName('cStat')->item(0);
+            $cStat = $cStatNode ? $cStatNode->nodeValue : '';
+            
+            if ($cStat == '138') { // Documentos localizados
+                $ultNSUNode = $dom->getElementsByTagName('ultNSU')->item(0);
+                $maxNSUNode = $dom->getElementsByTagName('maxNSU')->item(0);
+                
+                $ultNSUResp = $ultNSUNode ? $ultNSUNode->nodeValue : $ultNSU;
+                $maxNSU = $maxNSUNode ? $maxNSUNode->nodeValue : $ultNSU;
+                
+                $lote = $dom->getElementsByTagName('loteDistDFeInt')->item(0);
+                if ($lote) {
+                    $docZips = $lote->getElementsByTagName('docZip');
+                    foreach ($docZips as $docZip) {
+                        if (!$docZip instanceof \DOMElement) continue;
+
+                        $nsu = $docZip->getAttribute('NSU');
+                        $schema = $docZip->getAttribute('schema');
+                        $content = gzdecode(base64_decode($docZip->nodeValue));
+                        
+                        $type = $this->identifySchemaType($schema);
+                        
+                        $dir = "{$savePath}/{$type}";
+                        if (!is_dir($dir)) mkdir($dir, 0755, true);
+                        
+                        $filename = "{$nsu}.xml";
+                        file_put_contents("{$dir}/{$filename}", $content);
+                        
+                        $processed[] = [
+                            'nsu' => $nsu,
+                            'schema' => $schema,
+                            'type' => $type,
+                            'file' => "{$dir}/{$filename}"
+                        ];
+                    }
+                }
+                
+                // Atualiza o ponteiro
+                $ultNSU = $ultNSUResp;
+
+                // Salva o progresso atual
+                $this->updateMetadata($savePath, $ultNSU, $maxNSU, $cStat);
+
+                // Se já pegou tudo, para
+                if ($ultNSU >= $maxNSU) {
+                    break;
+                }
+            } else {
+                $this->updateMetadata($savePath, $ultNSU, $ultNSU, $cStat);
+                break;
+            }
+
+            // Pausa obrigatória para evitar Rejeição 656 (Consumo Indevido)
+            sleep(2);
+        }
+        
+        return $processed;
+    }
+
+    /**
+     * Registra o evento de Prestação de Serviço em Desacordo.
+     * Substitui o conceito de "Manifestação" da NFe.
+     */
+    public function manifest(string $key, int $tpEvento, string $justification = '', int $seq = 1): string
+    {
+        $config = json_decode($this->config);
+        $uf = $config->siglaUF ?? 'RN';
+        return $this->tools->sefazManifesta($key, $tpEvento, $justification, $seq, $uf);
+    }
+
+    private function identifySchemaType($schema): string 
+    {
+        if (strpos($schema, 'procCTe') !== false) return 'complete';
+        if (strpos($schema, 'resCTe') !== false) return 'summary';
+        if (strpos($schema, 'procEventoCTe') !== false) return 'event_complete';
+        if (strpos($schema, 'resEvento') !== false) return 'event_summary';
+        return 'unknown';
+    }
+
+    private function updateMetadata($savePath, $ultNSU, $maxNSU, $lastStatus): void
+    {
+        $metadata = [
+            'ultNSU' => (string) $ultNSU,
+            'maxNSU' => (string) $maxNSU,
+            'last_run' => date('c'),
+            'last_status' => $lastStatus
+        ];
+        file_put_contents("{$savePath}/metadata.json", json_encode($metadata, JSON_PRETTY_PRINT));
     }
 }
