@@ -64,7 +64,7 @@ class CteService
     public function fetchDfe(string $savePath = 'storage/dfe'): array
     {
         if (!is_dir($savePath)) {
-            mkdir($savePath, 0755, true);
+            mkdir($savePath, 0777, true);
         }
 
         $metadataPath = "{$savePath}/metadata.json";
