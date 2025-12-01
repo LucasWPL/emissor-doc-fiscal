@@ -173,6 +173,15 @@ class CteService
 
     private function updateMetadata($savePath, $ultNSU, $maxNSU, $lastStatus): void
     {
+        $currentMetadata = json_decode(file_get_contents("{$savePath}/metadata.json"), true);
+        if (
+            $currentMetadata['ultNSU'] == $ultNSU && 
+            $currentMetadata['maxNSU'] == $maxNSU && 
+            $currentMetadata['last_status'] == $lastStatus
+        ) {
+            return;
+        }
+        
         $metadata = [
             'ultNSU' => (string) $ultNSU,
             'maxNSU' => (string) $maxNSU,
