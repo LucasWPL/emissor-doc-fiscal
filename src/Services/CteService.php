@@ -61,7 +61,7 @@ class CteService
         }
     }
     
-    public function fetchDfe(string $savePath = 'storage/dfe'): array
+    public function fetchDfe(string $savePath = 'storage/dfe', int $maxLoop = 10): array
     {
         if (!is_dir($savePath)) {
             mkdir($savePath, 0755, true);
@@ -77,8 +77,7 @@ class CteService
 
         $processed = [];
         $loopCount = 0;
-        $maxLoop = 50; // Limite de segurança para evitar timeout do PHP
-
+        
         while ($loopCount < $maxLoop) {
             $loopCount++;
             
