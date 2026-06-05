@@ -159,11 +159,13 @@ class CteService
         $config = json_decode($this->config);
         $uf = $config->siglaUF ?? 'RN';
 
-        // Prestação do Serviço em Desacordo (610110) e seu cancelamento (610111)
-        // são eventos do tomador, recebidos pelo Ambiente Nacional (cOrgao = 91),
-        // e não pela SEFAZ da UF do emitente — caso contrário a SEFAZ rejeita com 677.
+        // Prestação em Desacordo (610110) e seu cancelamento (610111) são eventos do
+        // tomador: vão para o autorizador do EMITENTE do CT-e, identificado pela UF da
+        // própria chave (cUF = 2 primeiros dígitos), e não pela UF do tomador.
+        // Ex.: chave iniciada em "13" = AM -> SVRS, que possui CteRecepcaoEvento.
         if (in_array($tpEvento, [610110, 610111], true)) {
-             $uf = 'AN';
+            $cUF = (int) substr($key, 0, 2);
+            $uf = \NFePHP\Common\UFList::getUFByCode($cUF);
         }
         
         return $this->tools->sefazManifesta($key, $tpEvento, $justification, $seq, $uf);
