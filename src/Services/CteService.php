@@ -158,6 +158,14 @@ class CteService
     {
         $config = json_decode($this->config);
         $uf = $config->siglaUF ?? 'RN';
+
+        // Prestação do Serviço em Desacordo (610110) e seu cancelamento (610111)
+        // são eventos do tomador, recebidos pelo Ambiente Nacional (cOrgao = 91),
+        // e não pela SEFAZ da UF do emitente — caso contrário a SEFAZ rejeita com 677.
+        if (in_array($tpEvento, [610110, 610111], true)) {
+             $uf = 'AN';
+        }
+        
         return $this->tools->sefazManifesta($key, $tpEvento, $justification, $seq, $uf);
     }
 
