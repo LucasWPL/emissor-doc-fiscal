@@ -61,7 +61,7 @@ class CteService
         }
     }
     
-    public function fetchDfe(string $savePath = 'storage/dfe', int $maxLoop = 5): array
+    public function fetchDfe(string $savePath = 'storage/dfe', int $maxLoop = 3): array
     {
         if (!is_dir($savePath)) {
             mkdir($savePath, 0777, true);
@@ -144,7 +144,7 @@ class CteService
             }
 
             // Pausa obrigatória para evitar Rejeição 656 (Consumo Indevido)
-            sleep(2);
+            sleep(5);
         }
         
         return $processed;
